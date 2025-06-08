@@ -12,7 +12,7 @@ interface IAuthContext {
   UID: string;
   displayName: string;
   login: (email: string, password: string) => Promise<boolean>;
-  signup: (email: string, password: string) => void;
+  signup: (email: string, password: string) => Promise<boolean>;
   isAuthenticated: boolean;
 }
 
@@ -41,8 +41,9 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     const result = await registerUseCase.execute(email, password);
     if (result) {
       console.log("User registered successfully");
-      router.push("/login");
+      return true;
     }
+    return false;
   };
 
   const contextValue: IAuthContext = {
@@ -51,7 +52,7 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     displayName: "Fiap Farm User", // Placeholder for display name
     login,
     signup,
-    isAuthenticated: false,
+    isAuthenticated,
   };
 
   return (

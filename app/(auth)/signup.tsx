@@ -10,30 +10,35 @@ import { useRouter } from "expo-router";
 import theme from "../../design-system/src";
 import { useAuth } from "@/context/AuthContex";
 
-export default function Login() {
-  const { login } = useAuth();
+export default function Signup() {
+  const { signup } = useAuth();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = async () => {
-    console.log("Login button pressed");
-    try {
-      const success = await login(email, password);
-      if (success) {
-        console.log("Login successful");
-        // router.push("/home");
-      } else {
-        console.error("Login failed");
-      }
-    } catch (error) {
-      console.error("An error occurred during login:", error);
+  const handleSignup = async () => {
+    // Name is not used in backend, but you can extend your logic to save it
+    const success = await signup(email, password);
+    if (success) {
+      console.log("Signup successful");
+      router.push("/login");
+    } else {
+      console.error("Signup failed");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Sign Up</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        placeholderTextColor={theme.colors.text.secondary}
+        value={name}
+        onChangeText={setName}
+        autoCapitalize="words"
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -51,11 +56,11 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignup}>
+        <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push("/signup")}>
-        <Text style={styles.link}>Don't have an account? Sign up</Text>
+      <TouchableOpacity onPress={() => router.push("/login")}>
+        <Text style={styles.link}>Already have an account? Login</Text>
       </TouchableOpacity>
     </View>
   );
