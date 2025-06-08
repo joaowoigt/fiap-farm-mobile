@@ -1,6 +1,6 @@
 import { AuthRepository } from "../../../domain/repositories/auth-repository";
-import { signInWithEmailAndPassword, Auth } from "firebase/auth";
 import { auth as firebaseAuthInstance } from "../clientApp";
+import { signInWithEmailAndPassword, Auth } from "firebase/auth";
 import { createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
 import { User } from "../../../domain/models/user";
 import { mapFirebaseUserToDomainUser } from "../../mappers";

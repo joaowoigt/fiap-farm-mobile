@@ -8,11 +8,28 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import theme from "../../design-system/src";
+import { useAuth } from "@/context/AuthContex";
 
 export default function Login() {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
+  const handleLogin = async () => {
+    console.log("Login button pressed");
+    try {
+      const success = await login(email, password);
+      if (success) {
+        console.log("Login successful");
+        // router.push("/home");
+      } else {
+        console.error("Login failed");
+      }
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,7 +51,7 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => console.log("Navigate to Sign Up")}>

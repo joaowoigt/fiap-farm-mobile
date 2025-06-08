@@ -1,0 +1,68 @@
+import { User } from "@/domain/models/user";
+import { loginUseCaseImpl } from "@/domain/useCases/login/LoginUseCaseImpl";
+import { registerUseCaseImpl } from "@/domain/useCases/register/RegisterUseCaseImpl";
+import { router } from "expo-router";
+import { createContext, useContext, useState } from "react";
+
+const loginUseCase = loginUseCaseImpl;
+const registerUseCase = registerUseCaseImpl;
+
+interface IAuthContext {
+  user: User | null;
+  UID: string;
+  displayName: string;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string) => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<IAuthContext | undefined>(undefined);
+
+export const AuthProvider = (props: { children: React.ReactNode }) => {
+  const { children } = props;
+  const [user, setUser] = useState<User | null>(null);
+  const [UID, setUID] = useState<string>("");
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    const result = await loginUseCase.execute(email, password);
+    if ("user" in result) {
+      setUser(result.user);
+      setUID(result.user?.id || "");
+      setIsAuthenticated(true);
+    } else {
+      console.error("Login failed:", result.message);
+      setIsAuthenticated(false);
+    }
+    return isAuthenticated;
+  };
+
+  const signup = async (email: string, password: string) => {
+    const result = await registerUseCase.execute(email, password);
+    if (result) {
+      console.log("User registered successfully");
+      router.push("/login");
+    }
+  };
+
+  const contextValue: IAuthContext = {
+    user,
+    UID,
+    displayName: "Fiap Farm User", // Placeholder for display name
+    login,
+    signup,
+    isAuthenticated: false,
+  };
+
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
