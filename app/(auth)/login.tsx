@@ -9,9 +9,11 @@ import {
 import { useRouter } from "expo-router";
 import theme from "../../design-system/src";
 import { useAuth } from "@/context/AuthContex";
+import { useUser } from "@/context/UserContext";
 
 export default function Login() {
   const { login } = useAuth();
+  const { fetchUserData } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function Login() {
       const success = await login(email, password);
       if (success) {
         console.log("Login successful");
+        fetchUserData?.();
         router.push("/(tabs)/production");
       } else {
         console.error("Login failed");
