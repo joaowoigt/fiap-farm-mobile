@@ -4,8 +4,9 @@ import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import TableItem from "./tableItem/tableItem";
 
-export default function TableView() {
-  const { productionList } = useUser();
+export default function SalesTableView() {
+  const { salesList } = useUser();
+
   return (
     <View style={styles.container}>
       {/* Table Headers */}
@@ -14,17 +15,17 @@ export default function TableView() {
           <Text style={styles.headerText}>Produto</Text>
         </View>
         <View style={styles.headerCell}>
-          <Text style={styles.headerText}>Quantidade</Text>
+          <Text style={styles.headerText}>Tipo</Text>
         </View>
         <View style={styles.headerCell}>
-          <Text style={styles.headerText}>Status</Text>
+          <Text style={styles.headerText}>Receita</Text>
         </View>
       </View>
       {/* Table Rows */}
       <FlatList
-        data={productionList}
+        data={salesList}
         keyExtractor={(_, idx) => idx.toString()}
-        renderItem={({ item }) => <TableItem production={item} />}
+        renderItem={({ item }) => <TableItem sale={item} />}
         contentContainerStyle={styles.list}
       />
     </View>

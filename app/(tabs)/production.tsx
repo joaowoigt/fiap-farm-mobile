@@ -1,16 +1,13 @@
-import { useUser } from "@/context/UserContext";
 import theme from "@/design-system/src";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import TableView from "../production/table/tableView";
 
 export default function ProductionLayout() {
-  const { productionList } = useUser();
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Production Section</Text>
-      <TableView productions={productionList} />
+      <TableView />
     </View>
   );
 }
