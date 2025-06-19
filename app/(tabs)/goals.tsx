@@ -1,19 +1,28 @@
-import { Text, View } from "react-native";
+import theme from "@/design-system/src";
+import { StyleSheet, Text, View } from "react-native";
+import GoalsTableView from "../goals/table/goalsTableView";
 
 export default function GoalsLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      <Text
-        style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          textAlign: "center",
-          marginTop: 20,
-          color: "#333",
-        }}
-      >
-        Goals Screen
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Goal Section</Text>
+      <GoalsTableView />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background.default,
+    paddingTop: theme.spacing["12"],
+  },
+  title: {
+    fontSize: theme.fontSize["2xl"],
+    fontFamily: theme.fontFamily.sans,
+    color: theme.colors.primary,
+    textAlign: "center",
+    marginBottom: theme.spacing["6"],
+    fontWeight: "bold",
+  },
+});
