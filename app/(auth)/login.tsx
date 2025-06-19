@@ -22,7 +22,7 @@ export default function Login() {
       const success = await login(email, password);
       if (success) {
         console.log("Login successful");
-        // router.push("/home");
+        router.push("/(tabs)/production");
       } else {
         console.error("Login failed");
       }
