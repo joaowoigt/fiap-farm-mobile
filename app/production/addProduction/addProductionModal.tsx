@@ -174,7 +174,7 @@ export default function AddProductionModal({
             onChangeText={handleUnitValueChange}
             keyboardType="numeric"
             placeholderTextColor={theme.colors.text.secondary}
-          />{" "}
+          />
           {/* Product Type */}
           <View style={styles.pickerWrapper}>
             <Picker

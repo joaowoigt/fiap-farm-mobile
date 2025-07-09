@@ -16,11 +16,11 @@ export default function SalesTableView() {
         </View>
         <View style={styles.headerCell}>
           <Text style={styles.headerText}>Tipo</Text>
-        </View>
+        </View>{" "}
         <View style={styles.headerCell}>
           <Text style={styles.headerText}>Receita</Text>
         </View>
-      </View>{" "}
+      </View>
       {/* Table Rows */}
       <FlatList
         data={salesList}

@@ -17,9 +17,9 @@ export default function TableView() {
           <Text style={styles.headerText}>Quantidade</Text>
         </View>
         <View style={styles.headerCell}>
-          <Text style={styles.headerText}>Status</Text>
+          <Text style={styles.headerText}>Status</Text>{" "}
         </View>
-      </View>{" "}
+      </View>
       {/* Table Rows */}
       <FlatList
         data={productionList}

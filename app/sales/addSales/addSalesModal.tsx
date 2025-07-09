@@ -155,7 +155,6 @@ export default function AddSalesModal({
       onRequestClose={handleClose}
     >
       <View style={styles.modalOverlay}>
-        {" "}
         <View style={styles.bottomSheet}>
           <Text style={styles.sheetTitle}>Adicionar Venda</Text>
 
