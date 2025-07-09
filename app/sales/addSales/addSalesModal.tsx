@@ -1,7 +1,13 @@
+import { useUser } from "@/context/UserContext";
 import theme from "@/design-system/src";
+import Product from "@/domain/models/farm/product/Product";
+import { Type } from "@/domain/models/farm/product/Type";
+import { getAllAvailableProducts } from "@/domain/models/farm/production/Production";
+import { createSalesItem } from "@/domain/models/farm/sales/SalesItem";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
+  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -15,51 +21,130 @@ type AddSalesModalProps = {
   onClose: () => void;
 };
 
-const typeOptions = [
-  { label: "Cultura", value: "crops" },
-  { label: "Pecuária", value: "livestock" },
-  { label: "Laticínios", value: "dairy" },
-];
+// Helper function to get type label in Portuguese
+const getTypeLabel = (type: Type): string => {
+  switch (type) {
+    case Type.crops:
+      return "Cultura";
+    case Type.livestock:
+      return "Pecuária";
+    case Type.dairy:
+      return "Laticínios";
+    default:
+      return type;
+  }
+};
 
 export default function AddSalesModal({
   visible,
   onClose,
 }: AddSalesModalProps) {
-  const [productName, setProductName] = useState("");
+  const [selectedProductIndex, setSelectedProductIndex] = useState<number>(-1);
   const [quantity, setQuantity] = useState("");
-  const [unitValue, setUnitValue] = useState("");
-  const [type, setType] = useState("crops");
   const [isLoading, setIsLoading] = useState(false);
+  const { addSalesItem, productionList } = useUser();
 
-  // Format currency input for unit value
-  const handleUnitValueChange = (text: string) => {
-    // Remove non-digit chars
-    const numeric = text.replace(/\D/g, "");
-    // Format as BRL currency
-    const floatValue = (parseInt(numeric || "0", 10) / 100).toFixed(2);
-    setUnitValue(
-      Number(floatValue).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      })
-    );
-  };
+  // Get unique products from production list
+  const availableProducts = useMemo(() => {
+    return getAllAvailableProducts(productionList);
+  }, [productionList]);
+
+  // Get unique products (remove duplicates by name and type)
+  const uniqueProducts = useMemo(() => {
+    const uniqueMap = new Map<string, Product>();
+    availableProducts.forEach((product) => {
+      const key = `${product.name}-${product.type}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, product);
+      }
+    });
+    return Array.from(uniqueMap.values());
+  }, [availableProducts]);
+  const selectedProduct =
+    selectedProductIndex >= 0 ? uniqueProducts[selectedProductIndex] : null;
 
   const resetForm = () => {
-    setProductName("");
+    setSelectedProductIndex(-1);
     setQuantity("");
-    setUnitValue("");
-    setType("crops");
+    setIsLoading(false);
   };
 
+  const validateForm = (): string | null => {
+    if (selectedProductIndex < 0 || !selectedProduct) {
+      return "Selecione um produto";
+    }
+    if (!quantity || parseInt(quantity) <= 0) {
+      return "Quantidade deve ser maior que zero";
+    }
+    return null;
+  };
   const handleAddSales = async () => {
-    // TODO: Implementar lógica de adicionar venda
-    console.log("Adicionar venda:", {
-      productName,
-      quantity,
-      unitValue,
-      type,
-    });
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      Alert.alert("Erro de Validação", errorMessage);
+      return;
+    }
+
+    if (!selectedProduct) {
+      Alert.alert("Erro", "Produto não encontrado");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Use the selected product as is (without modifying it)
+      const salesItem = createSalesItem(selectedProduct, parseInt(quantity));
+
+      // Add sales item using UserContext
+      const success = await addSalesItem(salesItem);
+
+      if (success) {
+        Alert.alert("Sucesso", "Venda adicionada com sucesso!", [
+          {
+            text: "OK",
+            onPress: () => {
+              resetForm();
+              onClose();
+            },
+          },
+        ]);
+      } else {
+        Alert.alert("Erro", "Falha ao adicionar venda. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Error adding sales:", error);
+      Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleClose = () => {
+    const hasFormData = selectedProductIndex >= 0 || quantity;
+
+    if (hasFormData && !isLoading) {
+      Alert.alert(
+        "Descartar alterações?",
+        "Você tem dados não salvos. Deseja descartar as alterações?",
+        [
+          {
+            text: "Cancelar",
+            style: "cancel",
+          },
+          {
+            text: "Descartar",
+            style: "destructive",
+            onPress: () => {
+              resetForm();
+              onClose();
+            },
+          },
+        ]
+      );
+    } else {
+      resetForm();
+      onClose();
+    }
   };
 
   return (
@@ -67,48 +152,47 @@ export default function AddSalesModal({
       visible={visible}
       animationType="slide"
       transparent
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <View style={styles.modalOverlay}>
+        {" "}
         <View style={styles.bottomSheet}>
           <Text style={styles.sheetTitle}>Adicionar Venda</Text>
 
-          {/* Product Name */}
-          <TextInput
-            style={styles.input}
-            placeholder="Nome do produto"
-            value={productName}
-            onChangeText={setProductName}
-            placeholderTextColor={theme.colors.text.secondary}
-          />
-
-          {/* Product Type */}
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={type}
-              onValueChange={setType}
-              style={styles.picker}
-              dropdownIconColor={theme.colors.primary}
-            >
-              {typeOptions.map((opt) => (
-                <Picker.Item
-                  key={opt.value}
-                  label={opt.label}
-                  value={opt.value}
-                />
-              ))}
-            </Picker>
-          </View>
-
-          {/* Unit Value */}
-          <TextInput
-            style={styles.input}
-            placeholder="Valor unitário"
-            value={unitValue}
-            onChangeText={handleUnitValueChange}
-            keyboardType="numeric"
-            placeholderTextColor={theme.colors.text.secondary}
-          />
+          {/* Product Selection */}
+          {uniqueProducts.length === 0 ? (
+            <View style={styles.noProductsContainer}>
+              <Text style={styles.noProductsText}>
+                Nenhum produto disponível. Adicione produtos na aba de Produção
+                primeiro.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={selectedProductIndex}
+                onValueChange={(itemValue) =>
+                  setSelectedProductIndex(itemValue)
+                }
+                style={styles.picker}
+                dropdownIconColor={theme.colors.primary}
+              >
+                <Picker.Item label="Selecione um produto..." value={-1} />
+                {uniqueProducts.map((product, index) => (
+                  <Picker.Item
+                    key={`${product.name}-${product.type}-${index}`}
+                    label={`${product.name} (${getTypeLabel(
+                      product.type
+                    )}) - ${product.unitValue.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}`}
+                    value={index}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
 
           {/* Product Quantity */}
           <TextInput
@@ -122,9 +206,13 @@ export default function AddSalesModal({
 
           {/* Add Sales Button */}
           <TouchableOpacity
-            style={[styles.addButton, isLoading && styles.disabledButton]}
+            style={[
+              styles.addButton,
+              (isLoading || uniqueProducts.length === 0) &&
+                styles.disabledButton,
+            ]}
             onPress={handleAddSales}
-            disabled={isLoading}
+            disabled={isLoading || uniqueProducts.length === 0}
           >
             <Text style={styles.addButtonText}>
               {isLoading ? "Adicionando..." : "Adicionar Venda"}
@@ -132,7 +220,7 @@ export default function AddSalesModal({
           </TouchableOpacity>
 
           {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
             <Text style={styles.closeButtonText}>Fechar</Text>
           </TouchableOpacity>
         </View>
@@ -213,5 +301,18 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  noProductsContainer: {
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    marginBottom: 12,
+    alignItems: "center",
+  },
+  noProductsText: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.fontSize.base,
+    textAlign: "center",
+    fontStyle: "italic",
   },
 });

@@ -3,11 +3,13 @@ import Production from "@/domain/models/farm/production/Production";
 import SalesItem from "@/domain/models/farm/sales/SalesItem";
 import { getUserUseCaseImpl } from "@/domain/useCases/farm/GetUserUseCaseImpl";
 import { addProductionUseCaseImpl } from "@/domain/useCases/farm/production/AddProductionUseCaseImpls";
+import { addSalesItemUseCaseImpl } from "@/domain/useCases/farm/sales/AddSalesItemUseCaseImpl";
 import { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContex";
 
 const getUserUseCase = getUserUseCaseImpl;
 const addProductionUseCase = addProductionUseCaseImpl;
+const addSalesItemUseCase = addSalesItemUseCaseImpl;
 
 const emptyGoals: Goals = { productionGoals: [], salesGoals: [] };
 
@@ -17,6 +19,7 @@ interface IUserContext {
   goals: Goals;
   fetchUserData: () => void;
   addProduction: (production: Production) => Promise<boolean>;
+  addSalesItem: (salesItem: SalesItem) => Promise<boolean>;
 }
 
 const UserContext = createContext<IUserContext | undefined>(undefined);
@@ -46,7 +49,6 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
       console.error("Failed to fetch user data:", error);
     }
   };
-
   const addProduction = async (production: Production) => {
     try {
       const result = await addProductionUseCase.execute(UID, production);
@@ -60,11 +62,24 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
     }
   };
 
+  const addSalesItem = async (salesItem: SalesItem) => {
+    try {
+      const result = await addSalesItemUseCase.execute(UID, salesItem);
+      if (result) {
+        setSalesList((prev) => [...prev, salesItem]);
+      }
+      return result;
+    } catch (error) {
+      console.error("Failed to add sales item:", error);
+      return false;
+    }
+  };
   const contextValue: IUserContext = {
     productionList,
     salesList,
     goals,
     addProduction,
+    addSalesItem,
     fetchUserData,
   };
 
