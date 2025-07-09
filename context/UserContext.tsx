@@ -61,53 +61,12 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
       return false;
     }
   };
+
   const addSalesItem = async (salesItem: SalesItem) => {
     try {
       const result = await addSalesItemUseCase.execute(UID, salesItem);
       if (result) {
-        setSalesList((prev) => {
-          // Procura por um item existente com o mesmo produto (nome e tipo)
-          const existingItemIndex = prev.findIndex(
-            (item) =>
-              item.product.name === salesItem.product.name &&
-              item.product.type === salesItem.product.type
-          );
-
-          if (existingItemIndex !== -1) {
-            // Se existe um item com o mesmo produto, atualiza a quantidade e o income
-            const updatedList = [...prev];
-            const existingItem = updatedList[existingItemIndex];
-
-            // Calcula nova quantidade
-            const newQuantity = existingItem.quantity + salesItem.quantity;
-
-            // Calcula novo income baseado no valor unitário atual do produto
-            const newIncome = salesItem.product.unitValue * newQuantity;
-
-            // Atualiza o item existente
-            updatedList[existingItemIndex] = {
-              ...existingItem,
-              quantity: newQuantity,
-              income: newIncome,
-              product: {
-                ...existingItem.product,
-                // Mantém o valor unitário atualizado
-                unitValue: salesItem.product.unitValue,
-              },
-            };
-
-            console.log(
-              `Updated existing sales item: ${salesItem.product.name}, New quantity: ${newQuantity}, New income: ${newIncome}`
-            );
-            return updatedList;
-          } else {
-            // Se não existe, adiciona um novo item
-            console.log(
-              `Added new sales item: ${salesItem.product.name}, Quantity: ${salesItem.quantity}, Income: ${salesItem.income}`
-            );
-            return [...prev, salesItem];
-          }
-        });
+        setSalesList((prev) => [...prev, salesItem]);
       }
       return result;
     } catch (error) {
