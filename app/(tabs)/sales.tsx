@@ -1,13 +1,31 @@
 import theme from "@/design-system/src";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import AddSalesModal from "../sales/addSales/addSalesModal";
 import SalesTableView from "../sales/table/tableView";
 
 export default function SalesLayout() {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sales Section</Text>
       <SalesTableView />
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
+
+      {/* Bottom Sheet Modal */}
+      <AddSalesModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }
@@ -25,5 +43,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: theme.spacing["6"],
     fontWeight: "bold",
+  },
+  fab: {
+    position: "absolute",
+    right: 24,
+    bottom: 32,
+    backgroundColor: theme.colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  fabText: {
+    color: "#fff",
+    fontSize: 32,
+    fontWeight: "bold",
+    marginTop: -2,
   },
 });
