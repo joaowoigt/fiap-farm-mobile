@@ -43,25 +43,29 @@ export default function GoalsTableItem({ goal, type }: Props) {
         <Text style={styles.tagText}>
           {goalType.charAt(0).toUpperCase() + goalType.slice(1)}
         </Text>
-      </View>
+      </View>{" "}
       {/* Goal setted */}
       <View style={styles.row}>
         <Text style={styles.label}>Meta:</Text>
         <Text style={styles.value}>
-          {goal.goal.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+          {type === "production"
+            ? `${goal.goal.toLocaleString("pt-BR")} unidades`
+            : goal.goal.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
         </Text>
       </View>
       {/* Current value */}
       <View style={styles.row}>
         <Text style={styles.label}>Atual:</Text>
         <Text style={styles.value}>
-          {goal.current.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+          {type === "production"
+            ? `${goal.current.toLocaleString("pt-BR")} unidades`
+            : goal.current.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
         </Text>
       </View>
     </View>
