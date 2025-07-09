@@ -19,13 +19,16 @@ export default function TableView() {
         <View style={styles.headerCell}>
           <Text style={styles.headerText}>Status</Text>
         </View>
-      </View>
+      </View>{" "}
       {/* Table Rows */}
       <FlatList
         data={productionList}
         keyExtractor={(_, idx) => idx.toString()}
         renderItem={({ item }) => <TableItem production={item} />}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={true}
+        nestedScrollEnabled={true}
+        style={{ flex: 1 }}
       />
     </View>
   );
@@ -33,6 +36,7 @@ export default function TableView() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     margin: theme.spacing["4"],
     backgroundColor: theme.colors.background.default,
     borderRadius: 8,
@@ -57,6 +61,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   list: {
-    paddingBottom: theme.spacing["2"],
+    paddingBottom: 100, // Extra padding to avoid FAB overlap
   },
 });
