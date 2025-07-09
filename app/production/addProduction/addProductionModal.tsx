@@ -1,7 +1,13 @@
+import { useUser } from "@/context/UserContext";
 import theme from "@/design-system/src";
+import Product from "@/domain/models/farm/product/Product";
+import { Type } from "@/domain/models/farm/product/Type";
+import Production from "@/domain/models/farm/production/Production";
+import { Status } from "@/domain/models/farm/production/Status";
 import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
 import {
+  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -16,9 +22,9 @@ type AddProductionModalProps = {
 };
 
 const statusOptions = [
-  { label: "Em progresso", value: "inProgress" },
-  { label: "Aguardando", value: "waiting" },
-  { label: "Concluído", value: "done" },
+  { label: "Em progresso", value: Status.inProgress },
+  { label: "Aguardando", value: Status.waiting },
+  { label: "Concluído", value: Status.done },
 ];
 
 const typeOptions = [
@@ -31,11 +37,13 @@ export default function AddProductionModal({
   visible,
   onClose,
 }: AddProductionModalProps) {
+  const { addProduction } = useUser();
   const [productName, setProductName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [status, setStatus] = useState("inProgress");
   const [unitValue, setUnitValue] = useState("");
   const [type, setType] = useState("crops");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Format currency input for unit value
   const handleUnitValueChange = (text: string) => {
@@ -51,6 +59,69 @@ export default function AddProductionModal({
     );
   };
 
+  const resetForm = () => {
+    setProductName("");
+    setQuantity("");
+    setStatus("inProgress");
+    setUnitValue("");
+    setType("crops");
+  };
+
+  const handleAddProduction = async () => {
+    // Validate form
+    if (!productName.trim()) {
+      Alert.alert("Erro", "Nome do produto é obrigatório");
+      return;
+    }
+    if (!quantity.trim()) {
+      Alert.alert("Erro", "Quantidade é obrigatória");
+      return;
+    }
+    if (!unitValue.trim()) {
+      Alert.alert("Erro", "Valor unitário é obrigatório");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Parse unit value from formatted string
+      const numericValue = parseFloat(
+        unitValue.replace(/[^\d,]/g, "").replace(",", ".")
+      );
+
+      // Create Product object
+      const product: Product = {
+        name: productName.trim(),
+        type: type as Type,
+        unitValue: numericValue,
+      };
+
+      // Create Production object
+      const production: Production = {
+        product,
+        quantity: parseInt(quantity, 10),
+        status: status as Status,
+      };
+
+      // Call addProduction from UserContext
+      const success = await addProduction(production);
+
+      if (success) {
+        Alert.alert("Sucesso", "Adicionado com sucesso!");
+        resetForm();
+        onClose();
+      } else {
+        Alert.alert("Erro", "Falha ao adicionar produção. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Error adding production:", error);
+      Alert.alert("Erro", "Erro inesperado. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -61,7 +132,6 @@ export default function AddProductionModal({
       <View style={styles.modalOverlay}>
         <View style={styles.bottomSheet}>
           <Text style={styles.sheetTitle}>Adicionar Produção</Text>
-
           {/* Product Name */}
           <TextInput
             style={styles.input}
@@ -70,7 +140,6 @@ export default function AddProductionModal({
             onChangeText={setProductName}
             placeholderTextColor={theme.colors.text.secondary}
           />
-
           {/* Product Quantity */}
           <TextInput
             style={styles.input}
@@ -80,7 +149,6 @@ export default function AddProductionModal({
             keyboardType="numeric"
             placeholderTextColor={theme.colors.text.secondary}
           />
-
           {/* Product Status */}
           <View style={styles.pickerWrapper}>
             <Picker
@@ -98,7 +166,6 @@ export default function AddProductionModal({
               ))}
             </Picker>
           </View>
-
           {/* Unit Value */}
           <TextInput
             style={styles.input}
@@ -107,8 +174,7 @@ export default function AddProductionModal({
             onChangeText={handleUnitValueChange}
             keyboardType="numeric"
             placeholderTextColor={theme.colors.text.secondary}
-          />
-
+          />{" "}
           {/* Product Type */}
           <View style={styles.pickerWrapper}>
             <Picker
@@ -126,7 +192,16 @@ export default function AddProductionModal({
               ))}
             </Picker>
           </View>
-
+          {/* Add Production Button */}
+          <TouchableOpacity
+            style={[styles.addButton, isLoading && styles.disabledButton]}
+            onPress={handleAddProduction}
+            disabled={isLoading}
+          >
+            <Text style={styles.addButtonText}>
+              {isLoading ? "Adicionando..." : "Adicionar Produção"}
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>Fechar</Text>
           </TouchableOpacity>
@@ -147,7 +222,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 24,
-    minHeight: 340,
+    minHeight: 420,
     alignItems: "stretch",
   },
   sheetTitle: {
@@ -191,5 +266,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: theme.fontSize.base,
+  },
+  addButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignSelf: "stretch",
+    marginBottom: 8,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: theme.fontSize.base,
+    textAlign: "center",
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
 });
