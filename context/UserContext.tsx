@@ -1,7 +1,10 @@
+import { GoalType } from "@/data/firebase/goals/firebase-goals-repository";
+import Goal from "@/domain/models/farm/goals/Goal";
 import Goals from "@/domain/models/farm/goals/Goals";
 import Production from "@/domain/models/farm/production/Production";
 import SalesItem from "@/domain/models/farm/sales/SalesItem";
 import { getUserUseCaseImpl } from "@/domain/useCases/farm/GetUserUseCaseImpl";
+import { addGoalUseCaseImpl } from "@/domain/useCases/farm/goals/AddGoalUseCaseImpl";
 import { addProductionUseCaseImpl } from "@/domain/useCases/farm/production/AddProductionUseCaseImpls";
 import { addSalesItemUseCaseImpl } from "@/domain/useCases/farm/sales/AddSalesItemUseCaseImpl";
 import { createContext, useContext, useState } from "react";
@@ -10,6 +13,7 @@ import { useAuth } from "./AuthContex";
 const getUserUseCase = getUserUseCaseImpl;
 const addProductionUseCase = addProductionUseCaseImpl;
 const addSalesItemUseCase = addSalesItemUseCaseImpl;
+const addGoalUseCase = addGoalUseCaseImpl;
 
 const emptyGoals: Goals = { productionGoals: [], salesGoals: [] };
 
@@ -20,6 +24,7 @@ interface IUserContext {
   fetchUserData: () => void;
   addProduction: (production: Production) => Promise<boolean>;
   addSalesItem: (salesItem: SalesItem) => Promise<boolean>;
+  addGoal: (goal: Goal, goalType: "production" | "sales") => Promise<boolean>;
 }
 
 const UserContext = createContext<IUserContext | undefined>(undefined);
@@ -75,12 +80,32 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
       return false;
     }
   };
+
+  const addGoal = async (goal: Goal, goalType: "production" | "sales") => {
+    try {
+      // Convert goalType to GoalType enum
+      const goalTypeEnum =
+        goalType === "production" ? GoalType.production : GoalType.sales;
+
+      const result = await addGoalUseCase.execute(UID, goal, goalTypeEnum);
+      if (result) {
+        // Reload user data to ensure consistency with backend
+        await fetchUserData();
+      }
+      return result;
+    } catch (error) {
+      console.error("Failed to add goal:", error);
+      return false;
+    }
+  };
+
   const contextValue: IUserContext = {
     productionList,
     salesList,
     goals,
     addProduction,
     addSalesItem,
+    addGoal,
     fetchUserData,
   };
 
