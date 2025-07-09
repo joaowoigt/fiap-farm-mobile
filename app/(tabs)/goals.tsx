@@ -1,4 +1,5 @@
 import theme from "@/design-system/src";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import GoalsTableView from "../goals/table/goalsTableView";
 

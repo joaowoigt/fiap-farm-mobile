@@ -53,7 +53,8 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
     try {
       const result = await addProductionUseCase.execute(UID, production);
       if (result) {
-        setProductionList((prev) => [...prev, production]);
+        // Reload user data to ensure consistency with backend
+        await fetchUserData();
       }
       return result;
     } catch (error) {
@@ -61,12 +62,12 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
       return false;
     }
   };
-
   const addSalesItem = async (salesItem: SalesItem) => {
     try {
       const result = await addSalesItemUseCase.execute(UID, salesItem);
       if (result) {
-        setSalesList((prev) => [...prev, salesItem]);
+        // Reload user data to ensure consistency with backend
+        await fetchUserData();
       }
       return result;
     } catch (error) {
