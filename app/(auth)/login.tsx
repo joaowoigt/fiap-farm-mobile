@@ -1,15 +1,15 @@
+import { useAuth } from "@/context/AuthContex";
+import { useUser } from "@/context/UserContext";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   StyleSheet,
-  View,
+  Text,
   TextInput,
   TouchableOpacity,
-  Text,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
 import theme from "../../design-system/src";
-import { useAuth } from "@/context/AuthContex";
-import { useUser } from "@/context/UserContext";
 
 export default function Login() {
   const { login } = useAuth();
@@ -33,10 +33,9 @@ export default function Login() {
       console.error("An error occurred during login:", error);
     }
   };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Entrar</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -48,17 +47,17 @@ export default function Login() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Senha"
         placeholderTextColor={theme.colors.text.secondary}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push("/signup")}>
-        <Text style={styles.link}>Don't have an account? Sign up</Text>
+        <Text style={styles.link}>Não tem uma conta? Cadastre-se</Text>
       </TouchableOpacity>
     </View>
   );

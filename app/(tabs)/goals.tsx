@@ -11,7 +11,7 @@ export default function GoalsLayout() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Goal Section</Text>
+      <Text style={styles.title}>Metas</Text>
       <GoalsTableView />
 
       {/* Floating Action Button */}

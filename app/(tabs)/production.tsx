@@ -9,7 +9,7 @@ export default function ProductionLayout() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Production Section</Text>
+      <Text style={styles.title}>Produção</Text>
       <TableView />
 
       {/* Floating Action Button */}

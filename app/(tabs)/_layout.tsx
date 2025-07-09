@@ -30,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="production"
         options={{
-          title: "Production",
+          title: "Produção",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -39,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="sales"
         options={{
-          title: "Sales",
+          title: "Vendas",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
@@ -48,9 +48,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="goals"
         options={{
-          title: "Goals",
+          title: "Metas",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <IconSymbol size={28} name="target" color={color} />
           ),
         }}
       />

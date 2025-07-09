@@ -9,7 +9,7 @@ export default function SalesLayout() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sales Section</Text>
+      <Text style={styles.title}>Vendas</Text>
       <SalesTableView />
 
       {/* Floating Action Button */}
