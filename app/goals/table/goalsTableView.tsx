@@ -10,16 +10,22 @@ export default function GoalsTableView() {
   const hasProductionGoals = goals.productionGoals.length > 0;
   const hasSalesGoals = goals.salesGoals.length > 0;
   const hasAnyGoals = hasProductionGoals || hasSalesGoals;
-
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+      contentContainerStyle={[
+        styles.contentContainer,
+        !hasAnyGoals && styles.emptyContentContainer,
+      ]}
       showsVerticalScrollIndicator={false}
     >
       {!hasAnyGoals ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Nenhuma meta cadastrada.</Text>
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateTitle}>Nenhuma meta definida</Text>
+          <Text style={styles.emptyStateText}>
+            Você ainda não possui metas de produção ou vendas.{"\n"}
+            Toque no botão + para criar sua primeira meta!
+          </Text>
         </View>
       ) : (
         <>
@@ -69,6 +75,11 @@ const styles = StyleSheet.create({
     padding: theme.spacing["4"],
     paddingBottom: 100, // Extra space for FAB
   },
+  emptyContentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   section: {
     marginBottom: theme.spacing["6"],
   },
@@ -94,5 +105,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: theme.spacing["12"],
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: theme.spacing["8"],
+    paddingVertical: theme.spacing["12"],
+  },
+  emptyStateTitle: {
+    fontSize: theme.fontSize["xl"],
+    fontWeight: "bold",
+    color: theme.colors.text.default,
+    textAlign: "center",
+    marginBottom: theme.spacing["4"],
+    fontFamily: theme.fontFamily.sans,
+  },
+  emptyStateText: {
+    fontSize: theme.fontSize.base,
+    color: theme.colors.text.secondary,
+    textAlign: "center",
+    lineHeight: 24,
+    fontFamily: theme.fontFamily.sans,
   },
 });
