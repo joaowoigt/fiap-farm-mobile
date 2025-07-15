@@ -17,17 +17,22 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
   const handleLogin = async () => {
     console.log("Login button pressed");
     try {
       const success = await login(email, password);
       if (success) {
-        console.log("Login successful");
-        fetchUserData?.();
-        router.push("/(tabs)/production");
+        console.log("Login successful, waiting for UID then navigating...");
+        // Wait a bit longer for UID to be available, then navigate and fetch data
+        setTimeout(async () => {
+          router.push("/(tabs)/production");
+          // Give a bit more time for navigation to complete, then fetch data
+          setTimeout(() => {
+            fetchUserData?.();
+          }, 500);
+        }, 1000);
       } else {
-        console.error("Login failed");
+        console.error("Login failed - credentials invalid");
       }
     } catch (error) {
       console.error("An error occurred during login:", error);

@@ -1,7 +1,6 @@
 import { User } from "@/domain/models/user";
 import { loginUseCaseImpl } from "@/domain/useCases/login/LoginUseCaseImpl";
 import { registerUseCaseImpl } from "@/domain/useCases/register/RegisterUseCaseImpl";
-import { router } from "expo-router";
 import { createContext, useContext, useState } from "react";
 
 const loginUseCase = loginUseCaseImpl;
@@ -23,18 +22,19 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [UID, setUID] = useState<string>("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
   const login = async (email: string, password: string): Promise<boolean> => {
     const result = await loginUseCase.execute(email, password);
     if ("user" in result) {
+      console.log("Login bem-sucedido", result.user);
       setUser(result.user);
       setUID(result.user?.id || "");
       setIsAuthenticated(true);
+      return true; // Retorna true quando login é bem-sucedido
     } else {
       console.error("Login failed:", result.message);
       setIsAuthenticated(false);
+      return false; // Retorna false quando login falha
     }
-    return isAuthenticated;
   };
 
   const signup = async (email: string, password: string) => {

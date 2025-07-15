@@ -7,7 +7,7 @@ import { getUserUseCaseImpl } from "@/domain/useCases/farm/GetUserUseCaseImpl";
 import { addGoalUseCaseImpl } from "@/domain/useCases/farm/goals/AddGoalUseCaseImpl";
 import { addProductionUseCaseImpl } from "@/domain/useCases/farm/production/AddProductionUseCaseImpls";
 import { addSalesItemUseCaseImpl } from "@/domain/useCases/farm/sales/AddSalesItemUseCaseImpl";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContex";
 
 const getUserUseCase = getUserUseCaseImpl;
@@ -21,7 +21,7 @@ interface IUserContext {
   productionList: Production[];
   salesList: SalesItem[];
   goals: Goals;
-  fetchUserData: () => void;
+  fetchUserData: () => Promise<boolean>;
   addProduction: (production: Production) => Promise<boolean>;
   addSalesItem: (salesItem: SalesItem) => Promise<boolean>;
   addGoal: (goal: Goal, goalType: "production" | "sales") => Promise<boolean>;
@@ -36,8 +36,21 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
   const [salesList, setSalesList] = useState<SalesItem[]>([]);
   const [goals, setGoals] = useState<Goals>(emptyGoals);
 
-  const fetchUserData = async () => {
+  // Auto-fetch user data when UID becomes available
+  useEffect(() => {
+    if (UID) {
+      console.log("UID is now available, auto-fetching user data");
+      fetchUserData();
+    }
+  }, [UID]);
+  const fetchUserData = async (): Promise<boolean> => {
     try {
+      if (!UID) {
+        console.log("UID not available, skipping fetchUserData");
+        return false;
+      }
+
+      console.log("Fetching user data for UID:", UID);
       const userData = await getUserUseCase.execute(UID);
       if (userData) {
         setProductionList(userData.production || []);
@@ -49,9 +62,12 @@ export const UserProvider = (props: { children: React.ReactNode }) => {
         );
         console.log("User data fetched successfully sales:", userData.sales);
         console.log("User data fetched successfully goals:", userData.goals);
+        return true; // Success - data loaded
       }
+      return false;
     } catch (error) {
       console.error("Failed to fetch user data:", error);
+      return false;
     }
   };
   const addProduction = async (production: Production) => {
