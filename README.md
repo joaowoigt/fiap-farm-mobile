@@ -1,50 +1,169 @@
-# Welcome to your Expo app 👋
+# 🌾 FarmApp - Sistema de Gestão Agrícola
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Um aplicativo móvel completo para gestão de fazendas, desenvolvido como projeto final do Hackathon do curso de Engenharia de Frontend na FIAP + Alura.
 
-## Get started
+## 📖 Introdução
 
-1. Install dependencies
+O **FarmApp** é uma solução digital inovadora criada para facilitar a gestão de propriedades rurais. Com uma interface intuitiva e funcionalidades robustas, o aplicativo permite que produtores rurais gerenciem sua produção, vendas e metas de forma eficiente e organizada.
+
+### ✨ Principais Funcionalidades
+
+- **📊 Gestão de Produção**: Controle completo dos produtos cultivados com status de acompanhamento
+- **💰 Controle de Vendas**: Registro e acompanhamento de vendas com cálculo automático de receitas
+- **🎯 Metas e Objetivos**: Definição e monitoramento de metas de produção e vendas
+- **📱 Interface Responsiva**: Design adaptado para dispositivos móveis com experiência otimizada
+- **🔐 Autenticação Segura**: Sistema de login e registro com Firebase Authentication
+- **☁️ Sincronização em Nuvem**: Dados salvos e sincronizados automaticamente
+
+## 🚀 Como Inicializar o Projeto
+
+### Pré-requisitos
+
+Certifique-se de ter instalado em sua máquina:
+
+- **Node.js** (versão 18 ou superior)
+- **npm** ou **yarn**
+- **Expo CLI** (`npm install -g @expo/cli`)
+- **Android Studio** (para emulador Android) ou **Xcode** (para simulador iOS)
+
+### Passo a Passo
+
+1. **Clone o repositório**
+
+   ```bash
+   git clone [URL_DO_REPOSITORIO]
+   cd fiap-farm-mobile
+   ```
+
+2. **Instale as dependências**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Configure o Firebase**
+
+   - Crie um projeto no [Firebase Console](https://console.firebase.google.com)
+   - Ative Authentication e Firestore Database
+   - Configure as credenciais no arquivo de configuração
+
+4. **Inicie o servidor de desenvolvimento**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+5. **Execute o aplicativo**
+   - **Android**: Pressione `a` no terminal ou escaneie o QR code com o Expo Go
+   - **iOS**: Pressione `i` no terminal ou escaneie o QR code com o Expo Go
+   - **Web**: Pressione `w` no terminal
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 📱 Testando o Aplicativo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Expo Go**: Instale o app Expo Go na loja de aplicativos e escaneie o QR code
+- **Emulador**: Execute um emulador Android/iOS e o app será instalado automaticamente
+- **Dispositivo Físico**: Conecte via USB e use `npx expo run:android` ou `npx expo run:ios`
 
-## Get a fresh project
+## 🛠️ Tecnologias e Arquitetura
 
-When you're ready, run:
+### Stack Tecnológico
 
-```bash
-npm run reset-project
+- **React Native** - Framework principal para desenvolvimento mobile
+- **Expo** - Plataforma de desenvolvimento e build
+- **TypeScript** - Linguagem de programação com tipagem estática
+- **Firebase** - Backend as a Service (Authentication + Firestore)
+- **Expo Router** - Sistema de navegação baseado em arquivos
+
+### 🏗️ Arquitetura Clean Architecture
+
+O projeto segue os princípios da **Clean Architecture**, garantindo código organizado, testável e escalável:
+
+```
+📁 Estrutura do Projeto
+├── 🎨 app/                    # Camada de Apresentação (UI)
+│   ├── (auth)/               # Telas de autenticação
+│   ├── (tabs)/               # Telas principais com navegação
+│   ├── production/           # Módulo de produção
+│   ├── sales/                # Módulo de vendas
+│   └── goals/                # Módulo de metas
+├── 🧠 domain/                # Camada de Domínio (Regras de Negócio)
+│   ├── models/               # Entidades e modelos
+│   ├── useCases/             # Casos de uso
+│   └── repositories/         # Interfaces dos repositórios
+├── 💾 data/                  # Camada de Dados (Acesso a dados)
+│   ├── firebase/             # Implementações Firebase
+│   ├── mappers/              # Conversores de dados
+│   └── responses/            # Tipos de resposta da API
+├── 🎨 design-system/         # Sistema de Design
+│   ├── colors.ts             # Paleta de cores
+│   ├── typography.ts         # Tipografia
+│   └── components/           # Componentes reutilizáveis
+└── 🔧 context/               # Gerenciamento de Estado Global
+    ├── AuthContext.tsx       # Contexto de autenticação
+    └── UserContext.tsx       # Contexto de dados do usuário
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 🎯 Padrões Implementados
 
-## Learn more
+- **Repository Pattern**: Abstração da camada de dados
+- **Use Cases**: Encapsulamento da lógica de negócio
+- **Context API**: Gerenciamento de estado global
+- **Component Composition**: Componentes reutilizáveis e modulares
+- **Type Safety**: Tipagem rigorosa com TypeScript
 
-To learn more about developing your project with Expo, look at the following resources:
+### 🔥 Firebase Services
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- **Authentication**: Login/registro com email e senha
+- **Firestore**: Banco de dados NoSQL em tempo real
+- **Security Rules**: Regras de segurança para acesso aos dados
 
-## Join the community
+## 👨‍💻 Apresentação do Autor
 
-Join our community of developers creating universal apps.
+### Olá! Eu sou João Woigt Azevedo 👋
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Desenvolvedor Android na Stone** e **Estudante de Engenharia de Frontend** na FIAP + Alura. Sou uma pessoa apaixonada tanto por educação quanto por tecnologias, com formação em Ciências Sociais pela Unicamp e transição para tecnologia durante a pandemia.
+
+Este projeto representa a aplicação prática dos conhecimentos adquiridos em desenvolvimento frontend, combinando minha experiência em desenvolvimento móvel com as mais modernas tecnologias React Native.
+
+### 🎓 Formação Acadêmica
+
+- **Pós-graduação em Front-End Engineering** - FIAP (2024-2026)
+- **Tecnologia da Informação** - Let's Code (2021-2022) - Bolsista Santander Universidades
+- **Bacharelado e Licenciatura em Ciências Sociais** - Unicamp (2017-2021)
+
+### 💼 Experiência Profissional
+
+**Desenvolvedor Android Senior** com **3+ anos de experiência** no mercado:
+
+- **Stone** (2024 - atual): Desenvolvedor Android com foco em KMP para as squads de Pix
+- **CI&T** (2022-2024): Desenvolvedor Android Senior em projetos financeiros com +7mi de instalações
+- **Jera** (2021-2022): Desenvolvedor Android
+- **CNPq** (2018-2020): Bolsista PIBID - Programa de Introdução à Docência
+
+### 🚀 Competências Técnicas
+
+- **Mobile**: Android nativo, KMP (Kotlin Multiplatform), React Native
+- **Frontend**: JavaScript, TypeScript, Next.js
+- **Arquitetura**: MVVM, MVP, Clean Architecture, SOLID
+- **Ferramentas**: Flow, Coroutines, Koin, Retrofit, JUnit, MockK
+
+### 🏆 Certificações
+
+- ViewModel e Lifecycle para Melhor Experiência em Aplicativos Android
+- Desenvolvimento Integrado de Aplicações Android
+- Building Industry-Level Multiplatform Apps With KMM
+- Aplicando TDD e Padrões de Testes no Desenvolvimento de Aplicativos Android
+
+### 📫 Contato
+
+- **LinkedIn**: [linkedin.com/in/joaowoigt](https://www.linkedin.com/in/joaowoigt)
+- **Email**: joaowoigt@gmail.com
+- **Localização**: Limeira, São Paulo, Brasil
+
+---
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para fins educacionais como parte do Hackathon FIAP + Alura.
+
+**Desenvolvido com ❤️ para o Hackathon FIAP + Alura 2025**
